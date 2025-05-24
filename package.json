@@ -1,0 +1,16 @@
+{
+  "name": "developer-tinder",
+  "version": "1.0.0",
+  "description": "Developer Chatting App",
+  "main": "index.js",
+  "scripts": {
+    "test": "Jest",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js" 
+  },
+  "author": "Abhiraj_Karan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
