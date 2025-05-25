@@ -6,11 +6,12 @@
   "scripts": {
     "test": "Jest",
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js" 
+    "dev": "nodemon src/app.js"
   },
   "author": "Abhiraj_Karan",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongoose": "^8.15.0"
   }
 }
