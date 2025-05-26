@@ -3,24 +3,52 @@ const app = express();
  const connectDb = require("./config/database.js")
  const User = require("./models/user.js");
 
-app.post("/signUp", async (req,res)=>{
-  const userObj ={
-    "firstName":"Akshay",
-    "lastName":"Saini",
-    "emailId":"karan12342gmail.com",
-    "password":"1234Aks",
-    "age":"22",
-    "gender":"Male"
-   }
-   const user = new User(userObj);
-   try{
+ app.use(express.json());
+app.post("/signup", async (req,res)=>{
+   const user = new User(req.body);
+  try{
     await user.save();
-    res.send("User Saved")
-   }
-   catch(err){
-    res.status(500).send("User not saved");
-   }
+    res.send("User saved successfully");
+  }
+  catch{
+    res.status(500).send("something went wrong");
+  }
+})
 
+app.get("/feed", async (req,res)=>{
+  try{
+    const user= await User.find({});
+    console.log(user);
+     res.send("All users")
+  }
+  catch{
+    res.status(500).send("Something went wrong");
+  }
+})
+
+app.delete("/user",async (req,res)=>{
+
+  const userId = req.body.userId;
+  try{
+    await User.findByIdAndDelete(userId);
+    res.send("User Deleted")
+  }
+  catch{
+    res.status(500).send("Something went wrong");
+  }
+})
+
+app.patch("/user",async (req,res)=>{
+
+    const userId = req.body.userId;
+    const data = req.body;
+    try{
+      await User.findByIdAndUpdate(userId,data);
+      res.send("User Updated");
+    }
+    catch{
+      res.status(500).send("Something went wrong");
+    }
 })
 
 connectDb()
