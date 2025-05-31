@@ -7,11 +7,13 @@ const app = express();
 app.post("/signup", async (req,res)=>{
    const user = new User(req.body);
   try{
+   // if(User.findOne(req.body.emailId))
+     // res.send("Email in Used");
     await user.save();
     res.send("User saved successfully");
   }
-  catch{
-    res.status(500).send("something went wrong");
+  catch(err){
+    res.status(500).send("Something Went Wrong");
   }
 })
 
@@ -43,11 +45,11 @@ app.patch("/user",async (req,res)=>{
     const userId = req.body.userId;
     const data = req.body;
     try{
-      await User.findByIdAndUpdate(userId,data);
+      await User.findByIdAndUpdate(userId,data,{runValidators:true});
       res.send("User Updated");
     }
-    catch{
-      res.status(500).send("Something went wrong");
+    catch(err){
+      res.status(500).send("Something went wrong:"+ err.message);
     }
 })
 
