@@ -2,20 +2,45 @@ const express = require("express");
 const app = express();
  const connectDb = require("./config/database.js")
  const User = require("./models/user.js");
+ const validateSignUpData = require("./utils/validation.js");
+ const bcrypt = require("bcrypt");
 
  app.use(express.json());
-app.post("/signup", async (req,res)=>{
-   const user = new User(req.body);
+
+app.post("/logIn",async (req,res)=>
+  {
+    const {emailId, password} = req.body;
   try{
-   // if(User.findOne(req.body.emailId))
-     // res.send("Email in Used");
+    const user = await User.findOne({emailId:emailId});
+    if(!user)
+     throw new Error("Invalid credentials");
+    const isPasswordValid = bcrypt.compare(password,user.password);
+    if(isPasswordValid)
+     res.send("Login successfull");
+    else
+     throw new Error("Invalid credentials");
+}
+catch(err){
+  res.status(400).send("Error:"+ err.message);
+}
+})
+
+
+app.post("/signup", async (req,res)=>{ 
+  try{
+    const {firstName, lastName, emailId, password} = req.body;
+    validateSignUpData(req);
+    const passwordHash =await bcrypt.hash(password,10);
+    console.log(passwordHash);
+    const user = new User({firstName, lastName, emailId, password:passwordHash});
     await user.save();
     res.send("User saved successfully");
   }
   catch(err){
-    res.status(500).send("Something Went Wrong");
+    res.status(500).send("Something Went Wrong: "+err.message);
   }
 })
+
 
 app.get("/feed", async (req,res)=>{
   try{
@@ -23,10 +48,11 @@ app.get("/feed", async (req,res)=>{
     console.log(user);
      res.send("All users")
   }
-  catch{
+  catch(err){
     res.status(500).send("Something went wrong");
   }
 })
+
 
 app.delete("/user",async (req,res)=>{
 
@@ -40,11 +66,17 @@ app.delete("/user",async (req,res)=>{
   }
 })
 
-app.patch("/user",async (req,res)=>{
 
-    const userId = req.body.userId;
+app.patch("/user/:userId",async (req,res)=>{
+
+    const userId = req.params?.userId;
     const data = req.body;
     try{
+      const ALLOWED_UPDATE = ["firstName","lastName","password"," photoUrl","about","skills"]
+      const isUpdateAllowed = Object.keys(data).every((k)=>
+      ALLOWED_UPDATE.includes(k))
+      if(!isUpdateAllowed)
+        res.status(500).send("This field can't be updated");
       await User.findByIdAndUpdate(userId,data,{runValidators:true});
       res.send("User Updated");
     }
@@ -52,6 +84,7 @@ app.patch("/user",async (req,res)=>{
       res.status(500).send("Something went wrong:"+ err.message);
     }
 })
+
 
 connectDb()
 .then(()=>{

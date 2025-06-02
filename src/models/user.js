@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
      firstName:{
@@ -18,14 +19,22 @@ const userSchema = new mongoose.Schema({
          required:true,
          maxLength:50,
          minLength:12,
+         unique:true,
          lowercase: true,
-         unique: true,
-         trim:true
+         trim:true,
+         validate(value){
+          if(!validator.isEmail(value))
+               throw new Error("Invalid Email Address:"+value)
+         }
      },
      password:{
           type:String,
           required:true,
-          trim:true
+          trim:true,
+          validate(value){
+          if(!validator.isStrongPassword(value))
+               throw new Error("Enter a strong password:"+value);
+         }
      },
      age:{
           type:Number,
@@ -44,7 +53,11 @@ const userSchema = new mongoose.Schema({
      photoUrl:{
           type:String,
           trim:true,
-          default:"https://img.pikbest.com/origin/10/37/43/29tpIkbEsTxhN.png!bw700"
+          default:"https://img.pikbest.com/origin/10/37/43/29tpIkbEsTxhN.png!bw700",
+          validate(value){
+          if(!validator.isURL(value))
+               throw new Error("Invalid URL:"+value)
+         }
      },
      about:{
           type:String,
@@ -58,6 +71,7 @@ const userSchema = new mongoose.Schema({
 },{
      timestamps: true,
 });
+userSchema.index({ emailId: 1 });
 
 const User = mongoose.model("User",userSchema);
 
