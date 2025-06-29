@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     type:String,
     required:true,
     minLength:2,
-    maxLength:50
+    maxLength:50,
+    index:true
   },
   lastName:{
     type:String,
@@ -53,6 +54,7 @@ const userSchema = new mongoose.Schema({
   },
   photoURL:{
     type:String,
+    default:"https://t3.ftcdn.net/jpg/06/01/17/18/240_F_601171827_GwbDHEuhisbGFXRfIpXFhtf7wAvsbLut.jpg",
     validate(value){
       if(!validator.isURL(value))
         throw new Error ("Not valid Photo URL")
