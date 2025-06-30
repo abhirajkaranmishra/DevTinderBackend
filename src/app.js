@@ -6,6 +6,7 @@ const authRouter = require("./routes/auth.js");
 const profileRouter = require("./routes/profile.js");
 const requestRouter = require("./routes/request.js")
 const cors = require("cors");
+const userRouter = require("./routes/user.js")
 
 app.use(cors({origin: "http://localhost:5173",
   credentials: true }));
@@ -15,6 +16,7 @@ app.use(cookieParser());
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",requestRouter);
+app.use("/",userRouter);
 
 connectDB().then(()=>{
   console.log("Database connected successfully");
@@ -23,5 +25,5 @@ connectDB().then(()=>{
 })
 })
 .catch((err)=>{
-  console.err("Database not connected successfully");
+  console.error("Database not connected successfully");
 })
